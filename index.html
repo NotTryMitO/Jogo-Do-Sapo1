@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo do Sapo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1>Jogo do Sapo🐸</h1>
+        <div class="game">
+            <div class="background"></div>
+            <div class="background paused"></div>
+            <div class="frog" id="frog"></div>
+            <div class="obstacle" id="obstacle"></div>
+        </div>
+        <button id="playButton" class="hidden">Jogar</button>
+        <div id="score">
+            <div id="highScoreDisplay">
+                Máximo de Pontos: <span id="highScore"></span> | Pontos: <span id="currentScore">0</span>
+            </div>
+        </div>
+        <div id="gameOverMessage" class="hidden">
+            <div id="gameOverText">Perdeste! Tiveste <span id="finalScore"></span> pontos</div>
+            <button id="restartButton">Recomeçar</button>
+        </div>
+        <audio id="pointSound" src="pointSound.mp3" preload="auto"></audio>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
