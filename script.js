@@ -1,17 +1,21 @@
 const frog = document.getElementById('frog');
 const obstacle = document.getElementById('obstacle');
 const scoreDisplay = document.getElementById('currentScore');
-const pointSound = document.getElementById('pointSound'); // Elemento de áudio
+const pointSound = document.getElementById('pointSound');
 const restartButton = document.getElementById('restartButton');
 const playButton = document.getElementById('playButton');
 const highScoreDisplay = document.getElementById('highScore');
+const loseSound = document.getElementById('loseSound');
+const backgroundSound = document.getElementById('backgroundSound');
+
+backgroundSound.volume = 0.2;
 
 let isJumping = false;
 let gravity = 1;
 let jumpHeight = 80;
 let isGameOver = true;
 let score = 0;
-let obstacleSpeed = 2; // Ajustável para alterar a velocidade do obstáculo
+let obstacleSpeed = 2;
 let gameLoopInterval;
 
 document.addEventListener('keydown', function(event) {
@@ -33,13 +37,11 @@ function jump() {
                     isJumping = false;
                 }
                 position -= 5;
-                position = position * gravity;
                 frog.style.bottom = position + 'px';
                 frog.style.background = "url('frog1.png') no-repeat center center / contain";
             }, 20);
         } else {
             position += 5;
-            position = position * gravity;
             frog.style.bottom = position + 'px';
             frog.style.background = "url('frog1.png') no-repeat center center / contain";
         }
@@ -50,7 +52,7 @@ function checkCollision() {
     const frogRect = frog.getBoundingClientRect();
     const obstacleRect = obstacle.getBoundingClientRect();
 
-    const frogPadding = 10; 
+    const frogPadding = 10;
     const obstaclePadding = 15;
 
     const frogCollisionRect = {
@@ -77,20 +79,26 @@ function checkCollision() {
     }
 }
 
+function playLoseSound() {
+    loseSound.play();
+}
+
 function gameOver() {
+
+    backgroundSound.pause();
+    backgroundSound.currentTime = 0;
+    
     clearInterval(gameLoopInterval);
     document.getElementById('finalScore').textContent = score;
     document.getElementById('gameOverMessage').classList.remove('hidden');
     isGameOver = true;
-    saveHighScore(score); // Salvar pontuação mais alta
-    displayHighScore(); // Atualizar exibição da pontuação mais alta
+    saveHighScore(score);
+    displayHighScore();
 }
 
 function resetGame() {
-    // Ocultar a mensagem de game over
     document.getElementById('gameOverMessage').classList.add('hidden');
 
-    // Resetar o estado do jogo
     score = 0;
     scoreDisplay.textContent = score;
     isGameOver = false;
@@ -101,28 +109,30 @@ function resetGame() {
     obstacle.offsetHeight;
     obstacle.style.animation = `move ${obstacleSpeed}s infinite linear`;
 
-    // Reiniciar o loop do jogo
     startGameLoop();
+
+    backgroundSound.play();
+    backgroundSound.reset()
 }
 
 function updateScore() {
     score++;
     scoreDisplay.textContent = score;
     if (score % 100 === 0) {
-        pointSound.play(); // Tocar o som a cada 100 pontos
+        pointSound.play();
     }
 }
 
 restartButton.addEventListener('click', function() {
-    location.reload(); // Recarregar a página ao clicar no botão de recomeçar
+    location.reload();
 });
 
 playButton.addEventListener('click', function() {
     if (isGameOver) {
-        playButton.style.display = 'none'; // Ocultar o botão "Jogar"
-        document.querySelector('.background').classList.remove('paused'); // Remover a classe "paused" do elemento de fundo
-        resetGame(); // Iniciar o jogo apenas se estiver no estado de game over
-        displayHighScore(); // Exibir o recorde de pontos
+        playButton.style.display = 'none';
+        document.querySelector('.background').classList.remove('paused');
+        resetGame();
+        displayHighScore();
     }
 });
 
@@ -132,10 +142,9 @@ function startGameLoop() {
             checkCollision();
             updateScore();
         }
-    }, 100); // Verificar colisões e atualizar pontuação a cada 100ms
+    }, 100);
 }
 
-// Função para salvar o recorde de pontos
 function saveHighScore(score) {
     const highScore = loadHighScore();
     if (score > highScore) {
@@ -144,11 +153,7 @@ function saveHighScore(score) {
 }
 
 function loadHighScore() {
-    // Verifica se há um recorde de pontos armazenado em localStorage
     const highScore = localStorage.getItem('highScore');
-
-    // Se não houver um recorde de pontos armazenado, retorna 0
-    // Caso contrário, retorna o valor do recorde de pontos
     return highScore ? parseInt(highScore) : 0;
 }
 
@@ -159,6 +164,7 @@ function displayHighScore() {
 
 window.onload = function() {
     displayHighScore();
+    backgroundSound.play();
 };
 
 startGameLoop();
